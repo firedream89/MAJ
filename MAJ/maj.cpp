@@ -35,6 +35,7 @@ MAJ::MAJ(QString version, QString vAPI, QString vFTP, QString RA, QWidget *paren
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(Erreur()));
     QObject::connect(timer,SIGNAL(timeout()), timer, SLOT(stop()));
     QObject::connect(timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    //QObject::connect(reply,SIGNAL(downloadProgress()), timer, SLOT(stop()));
     loop.exec();
     timer->stop();
     QString retour = reply->readAll();
@@ -48,12 +49,14 @@ MAJ::MAJ(QString version, QString vAPI, QString vFTP, QString RA, QWidget *paren
     QEventLoop loop2;
     timer->start(10000);
     QObject::connect(reply2, SIGNAL(finished()), &loop2, SLOT(quit()));
+    //QObject::connect(reply2,SIGNAL(downloadProgress()), timer, SLOT(stop()));
     loop2.exec();
     timer->stop();
 
     QString fichier1 = reply2->readAll();
-    QStringList fichier = fichier1.split("\r\n");
+    QStringList fichier = fichier1.split("\n");
     QString nb = fichier.at(0);
+    qDebug() << fichier << fichier.count();
     ui->nbfichier->setText("0 / " + nb);
     int nb2 = 0;
     for(int cpt=1;cpt<fichier.count();cpt++)
@@ -65,6 +68,7 @@ MAJ::MAJ(QString version, QString vAPI, QString vFTP, QString RA, QWidget *paren
 
 ///Vérification dossier
 
+        qDebug() << fichier.at(cpt).split("/");
         QStringList listFichier = fichier.at(cpt).split("/");
         if(listFichier.count() > 1)
         {
@@ -78,10 +82,12 @@ MAJ::MAJ(QString version, QString vAPI, QString vFTP, QString RA, QWidget *paren
 ///Téléchargement des fichiers
         QNetworkAccessManager manager3;
 
+        qDebug() << ftp + maj + "/" + fichier.at(cpt);
         QNetworkReply *reply3 = manager3.get(QNetworkRequest(QUrl(ftp + maj + "/" + fichier.at(cpt))));
         connect(reply3, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(valeur(qint64,qint64)));
         QEventLoop loop3;
-        timer->start(10000);
+        timer->start(60000);
+        QObject::connect(reply3,SIGNAL(downloadProgress()), timer, SLOT(stop()));
         QObject::connect(reply3, SIGNAL(finished()), &loop3, SLOT(quit()));
         loop3.exec();
         timer->stop();
