@@ -91,7 +91,7 @@ MAJ::MAJ(QString version, QString vAPI, QString vFTP, QString RA, QString name, 
             loop.exec();
             timer.stop();
 
-            if(reply->canReadLine())
+            if(!reply->canReadLine())
             {
                 QMessageBox::warning(this, "Erreur", "Une Erreur s'est produite dans le téléchargement d'un fichier."
                                                      "Si l'application ne redémarre pas, veuillez la télécharger manuellement");
