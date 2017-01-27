@@ -28,8 +28,9 @@ class MAJ : public QWidget
     Q_OBJECT
 
 public:
-    explicit MAJ(QString version, QString vAPI, QString vFTP, QString RA = 0, QWidget *parent = 0);
+    explicit MAJ(QString version, QString vAPI, QString vFTP, QString RA = 0, QString name = 0, QString icon = 0, QWidget *parent = 0);
     ~MAJ();
+    void WebSite(QString site);
 
 private slots:
 void valeur(qint64 readBytes, qint64 totalBytes);
@@ -40,6 +41,7 @@ private:
     Ui::MAJ *ui;
     QString ftp;
     QString API;
+    QString m_WebSite;
 };
 
 #endif // MAJ_H
